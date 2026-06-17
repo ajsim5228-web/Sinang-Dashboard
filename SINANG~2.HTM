@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sinang Food — CEO Executive Dashboard 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0A0E17;
+  --surface:   #111827;
+  --surface2:  #1A2235;
+  --surface3:  #1F2D42;
+  --border:    #253048;
+  --border2:   #2E3D56;
+  --text:      #F0F4FF;
+  --text2:     #A8B4CC;
+  --muted:     #5C7094;
+  --accent:    #F97316;
+  --blue:      #3B82F6;
+  --green:     #10B981;
+  --amber:     #F59E0B;
+  --red:       #EF4444;
+  --miri:      #3B82F6;
+  --kuching:   #10B981;
+  --sibu:      #8B5CF6;
+  --bintulu:   #F59E0B;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* HEADER */
+.header {
+  background: linear-gradient(135deg, #0F1929 0%, #0A1520 60%, #0D1117 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 200; height: 62px;
+}
+.h-left  { display: flex; align-items: center; gap: 14px; }
+.h-right { display: flex; align-items: center; gap: 10px; }
+.logo {
+  width: 34px; height: 34px;
+  background: linear-gradient(135deg, #F97316, #EA580C);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 15px; color: white;
+  box-shadow: 0 0 18px rgba(249,115,22,.45);
+}
+.brand-name { font-size: 14px; font-weight: 700; color: var(--text); }
+.brand-sub  { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+.vline { width: 1px; height: 26px; background: var(--border); margin: 0 4px; }
+.h-title { font-size: 12px; font-weight: 500; color: var(--text2); }
+.live {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 9px; color: var(--green); font-weight: 700;
+  text-transform: uppercase; letter-spacing: .1em;
+}
+.live::before {
+  content: ''; width: 6px; height: 6px; background: var(--green);
+  border-radius: 50%; box-shadow: 0 0 6px var(--green);
+  animation: blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+.badge {
+  padding: 4px 12px; border-radius: 6px;
+  font-size: 10px; font-weight: 600;
+}
+.badge.per { background: var(--surface2); border: 1px solid var(--border2); color: var(--text2); font-family: 'DM Mono', monospace; }
+.badge.exec {
+  background: linear-gradient(135deg, rgba(249,115,22,.18), rgba(234,88,12,.08));
+  border: 1px solid rgba(249,115,22,.3); color: var(--accent);
+  text-transform: uppercase; letter-spacing: .08em;
+}
+
+/* LAYOUT */
+.main { padding: 22px 32px; max-width: 1600px; margin: 0 auto; }
+
+/* FILTER BAR */
+.fbar {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 16px; margin-bottom: 18px; flex-wrap: wrap;
+}
+.flabel { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; font-weight: 600; margin-right: 2px; }
+.fb {
+  padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border2);
+  background: transparent; color: var(--muted); font-size: 11px; font-weight: 500;
+  cursor: pointer; transition: all .15s; font-family: 'Inter', sans-serif;
+}
+.fb:hover { border-color: var(--accent); color: var(--text); }
+.fb.on    { background: rgba(249,115,22,.12); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.fb.miri.on    { background: rgba(59,130,246,.12);  border-color: var(--miri);    color: var(--miri); }
+.fb.kuching.on { background: rgba(16,185,129,.12);  border-color: var(--kuching); color: var(--kuching); }
+.fb.sibu.on    { background: rgba(139,92,246,.12);  border-color: var(--sibu);    color: var(--sibu); }
+.fb.bintulu.on { background: rgba(245,158,11,.12);  border-color: var(--bintulu); color: var(--bintulu); }
+.pipe { width: 1px; height: 20px; background: var(--border); margin: 0 6px; }
+
+/* EXEC STRIP */
+.strip {
+  display: grid;
+  grid-template-columns: 1.7fr 1fr 1fr 1fr 1fr;
+  gap: 12px; margin-bottom: 18px;
+}
+.hero {
+  background: linear-gradient(135deg, var(--surface2), var(--surface3));
+  border: 1px solid var(--border2); border-radius: 12px;
+  padding: 22px 24px; position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+}
+.h-lbl { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; font-weight: 600; margin-bottom: 10px; }
+.h-val {
+  font-size: 44px; font-weight: 800; font-family: 'DM Mono', monospace;
+  color: var(--accent); line-height: 1; letter-spacing: -.03em;
+}
+.h-unit { font-size: 14px; color: var(--text2); font-weight: 400; margin-left: 4px; }
+.h-trend {
+  display: inline-flex; align-items: center; gap: 5px;
+  margin-top: 10px; font-size: 11px; font-weight: 600;
+  padding: 3px 9px; border-radius: 5px;
+}
+.h-trend.up   { background: rgba(16,185,129,.12); color: var(--green); }
+.h-trend.down { background: rgba(239,68,68,.12);  color: var(--red); }
+.h-sub { font-size: 10px; color: var(--muted); margin-top: 6px; }
+
+.kcard {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px 18px; position: relative; overflow: hidden;
+  transition: border-color .2s, transform .15s;
+}
+.kcard:hover { transform: translateY(-1px); border-color: var(--border2); }
+.kcard .abar {
+  position: absolute; top: 0; left: 0; bottom: 0; width: 3px; border-radius: 12px 0 0 12px;
+}
+.kcard.miri    .abar { background: var(--miri);    box-shadow: 2px 0 10px rgba(59,130,246,.3); }
+.kcard.kuching .abar { background: var(--kuching); box-shadow: 2px 0 10px rgba(16,185,129,.3); }
+.kcard.sibu    .abar { background: var(--sibu);    box-shadow: 2px 0 10px rgba(139,92,246,.3); }
+.kcard.bintulu .abar { background: var(--bintulu); box-shadow: 2px 0 10px rgba(245,158,11,.3); }
+.k-lbl { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; font-weight: 600; padding-left: 8px; margin-bottom: 6px; }
+.k-val { font-size: 30px; font-weight: 700; font-family: 'DM Mono', monospace; line-height: 1; padding-left: 8px; }
+.k-sub { font-size: 10px; color: var(--muted); margin-top: 6px; padding-left: 8px; }
+.mbar  { margin-top: 10px; height: 3px; background: var(--border); border-radius: 2px; }
+.mfill { height: 100%; border-radius: 2px; transition: width .6s ease; }
+
+.ktop {
+  background: var(--surface); border: 1px solid var(--border);
+  border-top: 2px solid var(--accent); border-radius: 12px; padding: 16px 18px;
+}
+.t-lbl { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; font-weight: 600; margin-bottom: 6px; }
+.t-name { font-size: 13px; font-weight: 700; color: var(--accent); line-height: 1.3; }
+.t-sub  { font-size: 10px; color: var(--muted); margin-top: 6px; }
+
+/* INSIGHTS */
+.insights {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 10px; margin-bottom: 18px;
+}
+.ins {
+  border-radius: 10px; padding: 12px 15px;
+  display: flex; align-items: flex-start; gap: 10px; border-left: 3px solid;
+}
+.ins.red   { background: rgba(239,68,68,.06);   border-color: var(--red); }
+.ins.amber { background: rgba(245,158,11,.06);  border-color: var(--amber); }
+.ins.green { background: rgba(16,185,129,.06);  border-color: var(--green); }
+.ins.blue  { background: rgba(59,130,246,.06);  border-color: var(--blue); }
+.i-icon { font-size: 15px; flex-shrink: 0; }
+.i-tag  { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 3px; }
+.ins.red   .i-tag { color: var(--red); }
+.ins.amber .i-tag { color: var(--amber); }
+.ins.green .i-tag { color: var(--green); }
+.ins.blue  .i-tag { color: var(--blue); }
+.i-msg { font-size: 11px; color: var(--text2); line-height: 1.5; }
+
+/* CHARTS */
+.crow1 { display: grid; grid-template-columns: 2.2fr 1fr; gap: 13px; margin-bottom: 13px; }
+.crow2 { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 13px; margin-bottom: 13px; }
+.cp {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px;
+}
+.ph { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+.pt  { font-size: 10px; font-weight: 700; color: var(--text); text-transform: uppercase; letter-spacing: .08em; }
+.ps  { font-size: 10px; color: var(--muted); margin-top: 2px; }
+.ptg {
+  font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em;
+  padding: 3px 8px; border-radius: 4px; background: var(--surface2); color: var(--muted);
+  border: 1px solid var(--border); white-space: nowrap;
+}
+
+/* TABLE */
+.tcard {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden; margin-bottom: 13px;
+}
+.thead2 {
+  padding: 14px 22px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--surface2);
+}
+table { width: 100%; border-collapse: collapse; }
+th {
+  padding: 8px 14px; text-align: left; font-size: 9px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .1em;
+  border-bottom: 1px solid var(--border); font-weight: 600;
+  background: var(--surface2); white-space: nowrap;
+}
+th.r { text-align: right; }
+td {
+  padding: 9px 14px; font-size: 11px;
+  border-bottom: 1px solid rgba(37,48,72,.5);
+  font-family: 'DM Mono', monospace; white-space: nowrap;
+}
+td.nm { font-family: 'Inter', sans-serif; font-weight: 500; font-size: 12px; color: var(--text); }
+td.r  { text-align: right; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(26,34,53,.5); }
+.prog { display: flex; align-items: center; gap: 7px; }
+.pbg  { flex: 1; height: 4px; background: var(--border); border-radius: 2px; min-width: 55px; max-width: 85px; }
+.pfl  { height: 100%; border-radius: 2px; }
+.ppc  { font-size: 9px; color: var(--muted); width: 26px; text-align: right; }
+.pill {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 7px; border-radius: 4px; font-size: 9px; font-weight: 700;
+  font-family: 'Inter', sans-serif; text-transform: uppercase; letter-spacing: .05em; white-space: nowrap;
+}
+.pill.star    { background: rgba(16,185,129,.14); color: #10B981; border: 1px solid rgba(16,185,129,.25); }
+.pill.active  { background: rgba(59,130,246,.14); color: #60A5FA; border: 1px solid rgba(59,130,246,.25); }
+.pill.monitor { background: rgba(245,158,11,.14); color: #F59E0B; border: 1px solid rgba(245,158,11,.25); }
+.pill.low     { background: rgba(239,68,68,.1);   color: #EF4444; border: 1px solid rgba(239,68,68,.2); }
+.pill.disc    { background: rgba(239,68,68,.15);  color: #EF4444; border: 1px solid rgba(239,68,68,.3); }
+.dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+
+.footer {
+  margin-top: 20px; padding: 14px 0;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer span { font-size: 10px; color: var(--muted); }
+.footer .mono { font-family: 'DM Mono', monospace; }
+
+@media(max-width:1100px){
+  .strip { grid-template-columns: repeat(3,1fr); }
+  .crow1 { grid-template-columns: 1fr; }
+  .crow2 { grid-template-columns: 1fr; }
+  .insights { grid-template-columns: 1fr 1fr; }
+  .main { padding: 16px; }
+}
+@media(max-width:700px){
+  .strip { grid-template-columns: 1fr 1fr; }
+  .insights { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="h-left">
+    <div class="logo">S</div>
+    <div>
+      <div class="brand-name">Sinang Food</div>
+      <div class="brand-sub">Retail Promoter Intelligence</div>
+    </div>
+    <div class="vline"></div>
+    <div class="h-title">CEO Executive Dashboard &nbsp;·&nbsp; Jan – Jun 2026</div>
+  </div>
+  <div class="h-right">
+    <div class="live">Live</div>
+    <div class="badge per">H1 2026</div>
+    <div class="badge exec">Executive View</div>
+  </div>
+</header>
+
+<main class="main">
+
+  <div class="fbar">
+    <span class="flabel">Area</span>
+    <button class="fb on"      onclick="setArea('all')">All Areas</button>
+    <button class="fb miri"    onclick="setArea('Miri')">Miri</button>
+    <button class="fb kuching" onclick="setArea('Kuching')">Kuching</button>
+    <button class="fb sibu"    onclick="setArea('Sibu')">Sibu</button>
+    <button class="fb bintulu" onclick="setArea('Bintulu')">Bintulu</button>
+    <div class="pipe"></div>
+    <span class="flabel">Period</span>
+    <button class="fb on" onclick="setMonth('all')">YTD</button>
+    <button class="fb" onclick="setMonth(0)">Jan</button>
+    <button class="fb" onclick="setMonth(1)">Feb</button>
+    <button class="fb" onclick="setMonth(2)">Mar</button>
+    <button class="fb" onclick="setMonth(3)">Apr</button>
+    <button class="fb" onclick="setMonth(4)">May</button>
+    <button class="fb" onclick="setMonth(5)">Jun</button>
+  </div>
+
+  <div class="strip" id="strip"></div>
+
+  <div class="insights">
+    <div class="ins red">
+      <div class="i-icon">⛔</div>
+      <div><div class="i-tag">Urgent · Discontinue</div>
+      <div class="i-msg">Korean Sauce still selling in Jun — Miri 3, Sibu 24 units. Discontinuation incomplete. Escalate to Lilian &amp; CKD immediately.</div></div>
+    </div>
+    <div class="ins red">
+      <div class="i-icon">📉</div>
+      <div><div class="i-tag">Critical · Volume Drop</div>
+      <div class="i-msg">June total (612) is 69% below May peak (1,951). Confirm promoter deployments were not reduced across all 4 areas.</div></div>
+    </div>
+    <div class="ins amber">
+      <div class="i-icon">⚠️</div>
+      <div><div class="i-tag">Watch · Bintulu Gap</div>
+      <div class="i-msg">Rendang Paste, Masak Merah &amp; Buttermilk near zero in Bintulu all year. Confirm if intentional or missed opportunity.</div></div>
+    </div>
+    <div class="ins green">
+      <div class="i-icon">📈</div>
+      <div><div class="i-tag">Strong · Growth SKU</div>
+      <div class="i-msg">Annie's Buttermilk growing fast — Miri Jan 7 → May 67 units. Consolidation from Sinang Buttermilk working as planned.</div></div>
+    </div>
+    <div class="ins blue">
+      <div class="i-icon">🏆</div>
+      <div><div class="i-tag">Leader · Top SKU</div>
+      <div class="i-msg">Sambal Nasi Lemak leads YTD at 2,031 units (30.2% share). Kuching May spike to 299 units — investigate for replication.</div></div>
+    </div>
+    <div class="ins blue">
+      <div class="i-icon">📍</div>
+      <div><div class="i-tag">Leader · Top Area</div>
+      <div class="i-msg">Kuching dominates at 2,523 units YTD (37.5% share). Sibu underperforming at 13.2% — review promoter allocation.</div></div>
+    </div>
+  </div>
+
+  <div class="crow1">
+    <div class="cp">
+      <div class="ph">
+        <div><div class="pt">Monthly Volume Trend by Area</div><div class="ps">Jan – Jun 2026 · Click legend to toggle</div></div>
+        <div class="ptg" id="lineTag">All Areas</div>
+      </div>
+      <canvas id="lineChart" height="170"></canvas>
+    </div>
+    <div class="cp">
+      <div class="ph"><div><div class="pt">Area Share</div><div class="ps">% of total units</div></div></div>
+      <canvas id="doughChart" height="215"></canvas>
+    </div>
+  </div>
+
+  <div class="crow2">
+    <div class="cp">
+      <div class="ph"><div><div class="pt">SKU Performance</div><div class="ps" id="skuBarSub">Units by product</div></div></div>
+      <canvas id="skuBar" height="175"></canvas>
+    </div>
+    <div class="cp">
+      <div class="ph"><div><div class="pt">Monthly Momentum</div><div class="ps">MoM direction · all areas</div></div></div>
+      <canvas id="momBar" height="175"></canvas>
+    </div>
+    <div class="cp">
+      <div class="ph"><div><div class="pt">Area Stacked Volume</div><div class="ps" id="areaBarSub">Monthly by area</div></div></div>
+      <canvas id="areaBar" height="175"></canvas>
+    </div>
+  </div>
+
+  <div class="tcard">
+    <div class="thead2">
+      <div><div class="pt">SKU Scorecard</div></div>
+      <span class="ptg" id="tableLabel">All Areas · YTD</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28px">#</th>
+          <th>Product</th>
+          <th class="r" style="color:#3B82F6">Miri</th>
+          <th class="r" style="color:#10B981">Kuching</th>
+          <th class="r" style="color:#8B5CF6">Sibu</th>
+          <th class="r" style="color:#F59E0B">Bintulu</th>
+          <th class="r">Total</th>
+          <th>Share</th>
+          <th>Volume</th>
+          <th>Jun vs May</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    <span>Source: Lilian's Google Drive Reports &nbsp;·&nbsp; 4 Areas &nbsp;·&nbsp; 12 SKUs &nbsp;·&nbsp; Jan–Jun 2026</span>
+    <span class="mono" id="fdate"></span>
+  </div>
+
+</main>
+
+<script>
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun'];
+const AREAS=['Miri','Kuching','Sibu','Bintulu'];
+const COL={Miri:'#3B82F6',Kuching:'#10B981',Sibu:'#8B5CF6',Bintulu:'#F59E0B'};
+
+const RAW={
+  Miri:{
+    'Sambal Tahai Original':        [198,107,120,112,114,43],
+    'Sambal Tahai Spicy':           [159, 84, 99, 73, 87,49],
+    'Sambal Tahai Crunchy Xtra Hot':[ 73, 38, 48, 31, 46,14],
+    'Sambal Nasi Lemak':            [329,203,203,199,215,87],
+    'Masak Hitam Paste':            [ 13,  9, 24, 10, 14, 3],
+    'Taige Assam King':             [ 60, 26, 25, 20, 15, 3],
+    'Taige Assam Curry':            [ 20,  4, 11,  0,  0, 0],
+    'Rendang Paste':                [ 49, 13, 19, 32, 34,10],
+    'Masak Merah Paste':            [ 10,  0, 10,  9, 43,17],
+    'Korean Sauce':                 [ 32,  9,  7, 19, 21, 3],
+    'Sinang Buttermilk':            [  3,  0, 11, 29, 46,10],
+    "Annie's Buttermilk Sauce":     [  7,  0,  8, 33, 67,17],
+  },
+  Kuching:{
+    'Sambal Tahai Original':        [ 63, 39, 35, 27, 85,25],
+    'Sambal Tahai Spicy':           [ 61, 25, 37, 43, 89,28],
+    'Sambal Tahai Crunchy Xtra Hot':[ 23, 14, 16, 16, 69,22],
+    'Sambal Nasi Lemak':            [122, 86,101, 89,299,57],
+    'Masak Hitam Paste':            [ 59, 30, 44, 23, 71,10],
+    'Taige Assam King':             [ 32, 16, 57, 29, 57, 1],
+    'Taige Assam Curry':            [  0,  0,  0,  0,  1, 0],
+    'Rendang Paste':                [ 18,  9, 12,  7, 82, 7],
+    'Masak Merah Paste':            [  1,  0,  0, 19, 25,25],
+    'Korean Sauce':                 [ 51, 28,  7,  0,  0, 0],
+    'Sinang Buttermilk':            [ 10,  0,  0, 23, 30,13],
+    "Annie's Buttermilk Sauce":     [ 50,  9,  0, 22, 46,17],
+  },
+  Sibu:{
+    'Sambal Tahai Original':        [ 27,  9,  9,  7,  4, 6],
+    'Sambal Tahai Spicy':           [ 18,  5,  5,  4,  6, 1],
+    'Sambal Tahai Crunchy Xtra Hot':[  1,  8,  2,  5,  1, 1],
+    'Sambal Nasi Lemak':            [ 86, 39, 56, 41, 75, 6],
+    'Masak Hitam Paste':            [ 43, 19, 25, 27, 31,18],
+    'Taige Assam King':             [ 10,  3, 19,  9, 16, 1],
+    'Taige Assam Curry':            [  4,  8,  7,  1,  0,10],
+    'Rendang Paste':                [ 10, 10, 13, 10,  1, 1],
+    'Masak Merah Paste':            [ 17,  0,  0, 15,  1, 3],
+    'Korean Sauce':                 [  1,  6,  0,  1, 10,24],
+    'Sinang Buttermilk':            [  0,  0,  0,  1,  1, 5],
+    "Annie's Buttermilk Sauce":     [  2,  9, 10,  7,  4,10],
+  },
+  Bintulu:{
+    'Sambal Tahai Original':        [ 37,  9,151, 64, 69,14],
+    'Sambal Tahai Spicy':           [ 48, 12,113, 47, 42,15],
+    'Sambal Tahai Crunchy Xtra Hot':[ 30, 11, 54, 15, 14,12],
+    'Sambal Nasi Lemak':            [155, 30, 95, 73, 92,17],
+    'Masak Hitam Paste':            [  3,  5, 14,  5,  9, 3],
+    'Taige Assam King':             [ 16,  3,  6,  1, 15, 4],
+    'Taige Assam Curry':            [  6,  1,  3,  1,  4, 0],
+    'Rendang Paste':                [  0,  0,  0,  2,  0, 0],
+    'Masak Merah Paste':            [  0,  0,  0,  2,  0, 0],
+    'Korean Sauce':                 [  0,  0,  0,  1,  0, 0],
+    'Sinang Buttermilk':            [  0,  0,  0,  3,  0, 0],
+    "Annie's Buttermilk Sauce":     [  0,  0,  0,  4,  0, 0],
+  },
+};
+
+const SKUS=Object.keys(RAW.Miri);
+let aArea='all', aMon='all';
+
+const aa  =()=> aArea==='all'?AREAS:[aArea];
+const gv  =(a,s,m)=> m==='all'?RAW[a][s].reduce((x,y)=>x+y,0):RAW[a][s][m]||0;
+const at  =(a,m)=> SKUS.reduce((s,sk)=>s+gv(a,sk,m),0);
+const st  =(s,m)=> aa().reduce((x,a)=>x+gv(a,s,m),0);
+const gt  = m  => aa().reduce((x,a)=>x+at(a,m),0);
+const fmt = n  => n.toLocaleString();
+const pct =(v,t)=> t>0?(v/t*100).toFixed(1):'0.0';
+
+function status(sku,tot){
+  if(sku==='Korean Sauce') return ['disc','⛔ Discontinue'];
+  if(tot>=1000) return ['star','★ Star'];
+  if(tot>=300)  return ['active','● Active'];
+  if(tot>=100)  return ['monitor','▲ Monitor'];
+  return ['low','▼ Low'];
+}
+
+function rStrip(){
+  const g=gt(aMon);
+  const pm=(aMon==='all'||aMon===0)?null:aMon-1;
+  const pg=pm!==null?gt(pm):null;
+  const mom=pg?Math.round((g-pg)/pg*100):null;
+  const ts=[...SKUS].sort((a,b)=>st(b,aMon)-st(a,aMon))[0];
+  const tv=st(ts,aMon);
+
+  let h=`<div class="hero">
+    <div class="h-lbl">Total Units Sold</div>
+    <div class="h-val">${fmt(g)}<span class="h-unit">units</span></div>
+    ${mom!==null
+      ?`<div class="h-trend ${mom>=0?'up':'down'}">${mom>=0?'▲':'▼'} ${Math.abs(mom)}% vs ${MONTHS[pm]}</div>`
+      :`<div class="h-trend up">H1 2026 · YTD</div>`}
+    <div class="h-sub">${aArea==='all'?'4 Areas Combined':aArea} · 12 SKUs tracked</div>
+  </div>`;
+
+  AREAS.forEach(a=>{
+    if(aArea!=='all'&&aArea!==a)return;
+    const t=at(a,aMon),sh=pct(t,g),cls=a.toLowerCase();
+    h+=`<div class="kcard ${cls}">
+      <div class="abar"></div>
+      <div class="k-lbl"><span class="dot" style="background:${COL[a]}"></span>${a}</div>
+      <div class="k-val" style="color:${COL[a]}">${fmt(t)}</div>
+      <div class="k-sub">${sh}% of total</div>
+      <div class="mbar"><div class="mfill" style="width:${sh}%;background:${COL[a]}"></div></div>
+    </div>`;
+  });
+
+  if(aArea==='all'){
+    h+=`<div class="ktop">
+      <div class="t-lbl">Top SKU</div>
+      <div class="t-name">${ts}</div>
+      <div class="t-sub">${fmt(tv)} units · ${pct(tv,g)}% share</div>
+    </div>`;
+  }
+  document.getElementById('strip').innerHTML=h;
+}
+
+Chart.defaults.color='#5C7094';
+Chart.defaults.font.family="'Inter',sans-serif";
+const gc='rgba(37,48,72,.55)';
+const bs={x:{grid:{color:gc},ticks:{color:'#5C7094',font:{size:10}}},y:{grid:{color:gc},ticks:{color:'#5C7094',font:{size:10}}}};
+const ch={};
+const kc=id=>{if(ch[id]){ch[id].destroy();delete ch[id];}};
+
+function rLine(){
+  kc('ln');
+  const al=aArea==='all'?AREAS:[aArea];
+  const ds=al.map(a=>({
+    label:a,data:MONTHS.map((_,i)=>at(a,i)),
+    borderColor:COL[a],backgroundColor:COL[a]+'18',
+    borderWidth:2.5,pointRadius:4,pointHoverRadius:7,
+    pointBackgroundColor:COL[a],fill:aArea!=='all',tension:0.35,
+  }));
+  document.getElementById('lineTag').textContent=aArea==='all'?'All Areas':aArea;
+  ch['ln']=new Chart('lineChart',{
+    type:'line',data:{labels:MONTHS,datasets:ds},
+    options:{responsive:true,interaction:{mode:'index',intersect:false},
+      plugins:{legend:{labels:{color:'#5C7094',font:{size:10},boxWidth:10,padding:10}}},
+      scales:bs}
+  });
+}
+
+function rDough(){
+  kc('dh');
+  const al=aArea==='all'?AREAS:[aArea];
+  const vs=al.map(a=>at(a,aMon));
+  const tot=vs.reduce((a,b)=>a+b,0);
+  ch['dh']=new Chart('doughChart',{
+    type:'doughnut',
+    data:{labels:al,datasets:[{data:vs,backgroundColor:al.map(a=>COL[a]),borderWidth:0,hoverOffset:8}]},
+    options:{responsive:true,cutout:'63%',
+      plugins:{
+        legend:{position:'bottom',labels:{color:'#5C7094',font:{size:10},padding:10,boxWidth:9}},
+        tooltip:{callbacks:{label:c=>` ${c.label}: ${fmt(c.parsed)} units (${pct(c.parsed,tot)}%)`}}
+      }}
+  });
+}
+
+function rSku(){
+  kc('sk');
+  const srt=[...SKUS].sort((a,b)=>st(b,aMon)-st(a,aMon));
+  const lbs=srt.map(s=>s.length>16?s.substring(0,14)+'…':s);
+  const vs=srt.map(s=>st(s,aMon));
+  const bg=srt.map(s=>s==='Korean Sauce'?'#EF4444':aArea==='all'?'#F97316':COL[aArea]);
+  document.getElementById('skuBarSub').textContent=`${aArea==='all'?'All areas':aArea} · ${aMon==='all'?'YTD':MONTHS[aMon]}`;
+  ch['sk']=new Chart('skuBar',{
+    type:'bar',data:{labels:lbs,datasets:[{data:vs,backgroundColor:bg,borderRadius:5,borderSkipped:false}]},
+    options:{responsive:true,plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false},ticks:{color:'#5C7094',font:{size:9}}},y:{grid:{color:gc},ticks:{color:'#5C7094',font:{size:10}}}}}
+  });
+}
+
+function rMom(){
+  kc('mm');
+  const av=MONTHS.map((_,i)=>AREAS.reduce((s,a)=>s+at(a,i),0));
+  const cl=av.map((v,i)=>i===0?'#F97316':v>=av[i-1]?'#10B981':'#EF4444');
+  ch['mm']=new Chart('momBar',{
+    type:'bar',data:{labels:MONTHS,datasets:[{data:av,backgroundColor:cl,borderRadius:5,borderSkipped:false}]},
+    options:{responsive:true,plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false},ticks:{color:'#5C7094',font:{size:10}}},y:{grid:{color:gc},ticks:{color:'#5C7094',font:{size:10}}}}}
+  });
+}
+
+function rArea(){
+  kc('ab');
+  const al=aArea==='all'?AREAS:[aArea];
+  const ds=al.map(a=>({label:a,data:MONTHS.map((_,i)=>at(a,i)),backgroundColor:COL[a]+'CC',borderRadius:3,borderSkipped:false}));
+  document.getElementById('areaBarSub').textContent=`${aArea==='all'?'All areas':aArea} · monthly`;
+  ch['ab']=new Chart('areaBar',{
+    type:'bar',data:{labels:MONTHS,datasets:ds},
+    options:{responsive:true,
+      plugins:{legend:{labels:{color:'#5C7094',font:{size:9},boxWidth:8,padding:8}}},
+      scales:{x:{stacked:true,grid:{display:false},ticks:{color:'#5C7094',font:{size:10}}},
+              y:{stacked:true,grid:{color:gc},ticks:{color:'#5C7094',font:{size:10}}}}}
+  });
+}
+
+function rTable(){
+  const g=gt(aMon);
+  const srt=[...SKUS].sort((a,b)=>st(b,aMon)-st(a,aMon));
+  const mx=st(srt[0],aMon);
+  document.getElementById('tableLabel').textContent=`${aArea==='all'?'All Areas':aArea} · ${aMon==='all'?'YTD':MONTHS[aMon]}`;
+  const al=aArea==='all'?AREAS:[aArea];
+
+  const body=srt.map((sku,i)=>{
+    const t=st(sku,aMon),sh=pct(t,g),bw=mx>0?Math.round(t/mx*100):0;
+    const [sc,sl]=status(sku,t);
+    const jun=al.reduce((s,a)=>s+RAW[a][sku][5],0);
+    const may=al.reduce((s,a)=>s+RAW[a][sku][4],0);
+    let mom='—';
+    if(may>0){const d=Math.round((jun-may)/may*100);mom=`<span style="color:${d>=0?'#10B981':'#EF4444'};font-weight:600">${d>=0?'▲':'▼'}${Math.abs(d)}%</span>`;}
+    return `<tr>
+      <td style="color:var(--muted);font-size:9px">${i+1}</td>
+      <td class="nm">${sku}</td>
+      <td class="r" style="color:${COL.Miri}">${fmt(gv('Miri',sku,aMon))}</td>
+      <td class="r" style="color:${COL.Kuching}">${fmt(gv('Kuching',sku,aMon))}</td>
+      <td class="r" style="color:${COL.Sibu}">${fmt(gv('Sibu',sku,aMon))}</td>
+      <td class="r" style="color:${COL.Bintulu}">${fmt(gv('Bintulu',sku,aMon))}</td>
+      <td class="r" style="font-weight:700;color:var(--text)">${fmt(t)}</td>
+      <td style="color:var(--text2)">${sh}%</td>
+      <td><div class="prog"><div class="pbg"><div class="pfl" style="width:${bw}%;background:${sc==='disc'?'var(--red)':'var(--accent)'}"></div></div><span class="ppc">${bw}%</span></div></td>
+      <td>${mom}</td>
+      <td><span class="pill ${sc}">${sl}</span></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('tbody').innerHTML=body;
+}
+
+function setArea(a){
+  aArea=a;
+  document.querySelectorAll('.fb').forEach(b=>{
+    if(['All Areas','Miri','Kuching','Sibu','Bintulu'].includes(b.textContent.trim()))b.classList.remove('on');
+  });
+  event.target.classList.add('on');
+  rAll();
+}
+function setMonth(m){
+  aMon=m;
+  document.querySelectorAll('.fb').forEach(b=>{
+    if(['YTD','Jan','Feb','Mar','Apr','May','Jun'].includes(b.textContent.trim()))b.classList.remove('on');
+  });
+  event.target.classList.add('on');
+  rAll();
+}
+function rAll(){rStrip();rLine();rDough();rSku();rMom();rArea();rTable();}
+
+document.getElementById('fdate').textContent=
+  'Generated '+new Date().toLocaleDateString('en-MY',{day:'2-digit',month:'short',year:'numeric'});
+rAll();
+</script>
+</body>
+</html>
